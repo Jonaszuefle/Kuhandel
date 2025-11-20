@@ -1,0 +1,15 @@
+[project]
+name = "visualization"
+version = "0.1.0"
+description = "Simple version of card game Kuhhandel"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+]
+[tool.ruff]
+line-length = 88
+
+[dependency-groups]
+dev = [
+    "ruff>=0.13.2",
+]
