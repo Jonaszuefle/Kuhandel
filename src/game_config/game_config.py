@@ -1,6 +1,6 @@
 class GameConfig:
     # Kartenwerte
-    COW_CARD_VALUES = [10]#, 20, 40, 70, 100]  # z. B.
+    COW_CARD_VALUES = [10]  # , 20, 40, 70, 100]  # z. B.
     DONKEY_COW = COW_CARD_VALUES[0]
 
     # Geldkarten
