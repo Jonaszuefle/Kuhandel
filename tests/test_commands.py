@@ -137,7 +137,7 @@ class TestTradeCommand(unittest.TestCase):
         """Test validation checks both current_player and challenged_player resources."""
         # Arrange
         game = Mock()
-        game.get_current_player.return_value = 0
+        game.get_current_player_idx.return_value = 0
         current_player = Mock()
         current_player.has_cow.return_value = True
         current_player.has_enough_money.return_value = True
@@ -164,13 +164,13 @@ class TestTradeCommand(unittest.TestCase):
         current_player.has_cow.assert_called_once_with(10, 1)
         challenged_player.has_enough_money.assert_called_once()
         challenged_player.has_cow.assert_called_once_with(10, 1)
-        game.get_current_player.assert_called_once()
+        game.get_current_player_idx.assert_called_once()
 
     def test_validate_checks_both_players_fail_cow(self):
         """Test validation checks both current_player and challenged_player resources."""
         # Arrange
         game = Mock()
-        game.get_current_player.return_value = 0
+        game.get_current_player_idx.return_value = 0
         current_player = Mock()
         current_player.has_cow.return_value = False
         current_player.has_enough_money.return_value = True
@@ -197,7 +197,7 @@ class TestTradeCommand(unittest.TestCase):
         current_player.has_cow.assert_called_once_with(10, 1)
         challenged_player.has_enough_money.assert_called_once()
         challenged_player.has_cow.assert_called_once_with(10, 1)
-        game.get_current_player.assert_called_once()
+        game.get_current_player_idx.assert_called_once()
 
 
 class TestShowStatsCommand(unittest.TestCase):

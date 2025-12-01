@@ -11,3 +11,5 @@ class GameConfig:
     COPIES_PER_COW = 4
     MAX_PLAYERS = 4
     MIN_PLAYERS = 2
+
+    AUTOMATIC_MONEY_CARD_CHOICE = True

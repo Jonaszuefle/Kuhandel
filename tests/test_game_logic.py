@@ -19,7 +19,7 @@ def mock_player_class():
         # Wenn ein Player() erstellt wird, geben wir ein Mock-Objekt zurück
         player_instance = MagicMock()
         player_instance.get_score.return_value = 100
-        player_instance.cow_cards_obj.get_cow_inventory.return_value = [10, 20]
+        player_instance._cow_cards.get_cow_inventory.return_value = [10, 20]
         MockPlayer.return_value = player_instance
         yield MockPlayer
 
