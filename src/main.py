@@ -36,33 +36,7 @@ if __name__ == "__main__":
         
         if res.type == ResultType.FAILURE:
             print(res.message)
-        
-        game.is_game_over()
-
-        # command = io_handler.get_command(current_player=game.get_current_player_idx())
-        
-        # command.prepare(game)
-
-        # res = Result(ResultType.FAILURE)        # bid/trade logic
-        # while res.type == ResultType.FAILURE:
-        #     params = io_handler.get_inputs_for_command(command)
-
-        #     command.fill(params)
-        #     res = command.validate_command_values(game)
-
-        #     if res.type == ResultType.FAILURE:
-        #         print(res.message)
-        #     elif res.type == ResultType.CANCEL:
-        #         break    
-
-        # if res.type == ResultType.CANCEL:
-        #     continue  
-        
-        # res = command.execute(game)
-
-        # if not res.message is None:
-        #     print(res.message)
-
 
         game.is_game_over()
+
             

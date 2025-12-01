@@ -14,7 +14,7 @@ class PlayerInterface(ABC):
 
     # Bidding
     @abstractmethod
-    def make_bid_decision(self, view: PlayerView, bid_handler: BidHandler) -> Bid:
+    def make_bid_decision(self, view: PlayerView, bid_handler: BidHandler) -> Bid | None:
         """Decision making during the bidding process. Return Bid(idx, amount), if player wants to place bid, else Bid(idx, None)"""
         pass
 

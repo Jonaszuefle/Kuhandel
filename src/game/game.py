@@ -179,6 +179,7 @@ class Game:
         self._players[self.get_current_player_idx()].remove_money(money_amount_challenger)
 
     def get_possible_cow_trades(self) -> dict[int, list[int]] :
+        """Returns a dict with player indices and the joint cows with respect the current player."""
         curr_pl = self._players[self._current_player]
         curr_cows = list(set(curr_pl._cow_cards.get_cow_inventory())) 
         
