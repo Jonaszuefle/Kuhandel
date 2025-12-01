@@ -12,6 +12,10 @@ class PlayBidTurn:
         self.game = game
 
     def execute(self):
+
+        if self.game.is_card_stack_empty():
+            return Result(ResultType.FAILURE, f"Card stack is empty")
+
         self.game.draw_cow_from_stack()
         if self.game.is_donkey_cow():
             self.game.inflate_player_money()

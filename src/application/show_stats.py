@@ -1,16 +1,13 @@
-from io_handler.outputs import ConsolOutputHandler
 from return_types.results import Result, ResultType
 
 class StatsHandler():
     def __init__(self, game):
         self.game = game
-        self.o_handler = ConsolOutputHandler()
-
 
     def execute(self):
         stats = self.game.get_player_stats()
         msg = self.get_player_stats_msg(stats)
-        self.o_handler.print_message(msg)
+        print(msg)
 
         return Result(ResultType.SUCCESS)
 

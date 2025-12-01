@@ -21,6 +21,7 @@ class Game:
         self._players = self.get_list_of_players()
         self._current_player = self.get_random_starting_player()
         self._current_turn = 0
+        self._active_players = list(range(self.num_players))
 
     def get_list_of_players(self) -> list[Player]:
         players = []
@@ -72,6 +73,10 @@ class Game:
         """Retrun the sum of money cards"""
         return sum([a * b for a, b in zip(money_amount, GameConfig.MONEY_CARD_VALUES)])
     
+    def remove_active_player(self, idx):
+        """Remove an player if he is not active anymore"""
+        self._active_players.remove(idx)
+    
     def get_player_view(self, player_idx: int) -> PlayerView:
         """Return the player view for the given player index"""
         player = self.get_player(player_idx)
@@ -94,6 +99,9 @@ class Game:
             self._is_card_stack_empty = True
 
         self._card_stack.pop(0)
+
+    def is_card_stack_empty(self) -> bool:
+        return self._is_card_stack_empty
 
     def undo_cow_card_craw(self):
         self._card_stack.insert(0, self.current_cow_draw)
@@ -136,6 +144,13 @@ class Game:
                 has_cow = True
                 break
         return has_cow
+    
+    def is_any_player_finished(self):
+        """Check if a player has no cows and the deck is empty"""
+        if self.is_card_stack_empty():
+            for pl_idx in self._active_players:
+                if not any(self.get_player(pl_idx).get_cow_inventory()):
+                    self.remove_active_player(pl_idx)
 
     # Turn based
     def process_command(self):  # method for future use
@@ -144,13 +159,24 @@ class Game:
             pass
 
     def end_turn(self):
+        """Check if players have 4 cows, update the score and change to the next player"""
         for i in range(self.num_players):
             self._players[i].update_score()
 
+        self.is_any_player_finished()
         self.set_current_turn()
-        self.set_current_player(
-            (self.get_current_turn() + self.get_current_player_idx()) % self.num_players
-        )
+
+        if len(self._active_players) <= 1:
+            return
+
+        current_idx_in_active = self._active_players.index(self.get_current_player_idx()) 
+        next_in_active = (current_idx_in_active + 1) % len(self._active_players)
+
+        next_pl_idx = self._active_players[next_in_active]
+
+        print(f"Debug: {next_pl_idx}, {self._active_players}")
+
+        self.set_current_player(next_pl_idx)
 
     # Bid specific
     def handle_bid(self, player_who_gets_cow: int, player_who_gets_money: int, money_amount: list[int]):
@@ -197,7 +223,7 @@ class Game:
             if any(joint_cows): 
                 ret[pl.get_player_idx()] = joint_cows
 
-        if any(ret):
+        if ret:
             return ret
         else:
             return None

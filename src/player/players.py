@@ -116,7 +116,7 @@ class MoneyCards:
 
 class CowCards:
     def __init__(self):
-        self._cow_inventory = [20]  # list of current cows (unsorted)
+        self._cow_inventory = []  # list of current cows (unsorted)
         self.cow_finished = []
 
     def get_cow_inventory(self):
@@ -127,7 +127,7 @@ class CowCards:
             self._cow_inventory.append(cow_card)
 
     def has_cow(self, cow_card: int, cow_card_amount: int):
-        if self._cow_inventory.count(cow_card) == cow_card_amount:
+        if self._cow_inventory.count(cow_card) >= cow_card_amount:
             return True
         else:
             return False

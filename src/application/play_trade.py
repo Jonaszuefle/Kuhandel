@@ -31,7 +31,7 @@ class PlayTradeTurn:
         self.trade_handler = TradeHandler(cow_type, cow_amount, current_player_idx, enemy_idx) 
 
         trade_challenger = self.player_interfaces[current_player_idx].make_trade_offer(self.game.get_player_view(current_player_idx))
-        if not self.game.get_current_player().has_enough_money(trade_challenger.amount):
+        if not self.game.get_player(enemy_idx).has_enough_money(trade_challenger.amount):
             return Result(ResultType.FAILURE, f"Current player does not have enough money")
         
         self.trade_handler.set_challenger_bid(trade_challenger)
@@ -47,8 +47,7 @@ class PlayTradeTurn:
         self.game.handle_trade(cow_type, cow_amount, enemy_idx, trade_challenger.amount, trade_contender.amount, winner, looser)  # TODO
         self.game.end_turn()
 
-
-        return Result(ResultType.FAILURE)
+        return Result(ResultType.SUCCESS)
 
         
 
