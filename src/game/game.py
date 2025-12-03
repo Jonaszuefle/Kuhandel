@@ -80,8 +80,7 @@ class Game:
 
         return PlayerView(player.get_player_idx(), public_player_view, private_view)
 
-    ### Game Logik ###
-
+    #-- Game Logik --
     def is_game_over(self) -> list[int] | None:
         """Returns the final scores if the game is over, otherwise None"""
         if self.card_stack.is_empty() and not self.have_players_cows():
@@ -110,56 +109,6 @@ class Game:
                 if not any(self.get_player(pl_idx).get_cow_inventory()):
                     self.remove_active_player(pl_idx)
 
-    # Turn based
-    def process_command(self):  # method for future use
-        is_command_valid = True
-        if is_command_valid:
-            pass
-
-    def end_turn(self):
-        """Check if players have 4 cows, update the score and change to the next player"""
-        for i in range(self.num_players):
-            self._players[i].update_score()
-
-        self.is_any_player_finished()
-        self.set_current_turn()
-
-        if len(self._active_players) <= 1:
-            return
-
-        current_idx_in_active = self._active_players.index(self.get_current_player_idx()) 
-        next_in_active = (current_idx_in_active + 1) % len(self._active_players)
-
-        next_pl_idx = self._active_players[next_in_active]
-
-        self.set_current_player(next_pl_idx)
-
-    # Bid specific
-    def handle_bid(self, cow_type: int, player_who_gets_cow: int, player_who_gets_money: int, money_amount: list[int]):
-        self._players[player_who_gets_cow].add_cow(cow_type, 1)
-        self._players[player_who_gets_money].add_money(money_amount)
-        self._players[player_who_gets_cow].remove_money(money_amount)
-
-    # Trade specific
-    def handle_trade(
-        self,
-        cow_type: int,
-        cow_amount: int,
-        challenged_player: int,
-        money_amount_challenger: list[int],
-        money_amount_contender: list[int],
-        winner_idx: int,
-        looser_idx: int,
-    ):
-        self._players[winner_idx].add_cow(cow_type, cow_amount)
-        self._players[looser_idx].remove_cow(cow_type, cow_amount)
-
-        self._players[challenged_player].add_money(money_amount_challenger)
-        self._players[challenged_player].remove_money(money_amount_contender)
-
-        self._players[self.get_current_player_idx()].add_money(money_amount_contender)
-        self._players[self.get_current_player_idx()].remove_money(money_amount_challenger)
-
     def get_possible_cow_trades(self) -> dict[int, list[int]] :
         """Returns a dict with player indices and the joint cows with respect the current player."""
         curr_pl = self._players[self._current_player]
@@ -182,9 +131,52 @@ class Game:
         if ret:
             return ret
         else:
-            return None
+            return {}
+            
+    #-- Turn handling --
+    def end_turn(self):
+        """Check if players have 4 cows, update the score and change to the next player"""
+        for i in range(self.num_players):
+            self._players[i].update_score()
 
-    # Value 
+        self.is_any_player_finished()
+        self.set_current_turn()
+
+        if len(self._active_players) <= 1:
+            return
+
+        current_idx_in_active = self._active_players.index(self.get_current_player_idx()) 
+        next_in_active = (current_idx_in_active + 1) % len(self._active_players)
+
+        next_pl_idx = self._active_players[next_in_active]
+
+        self.set_current_player(next_pl_idx)
+
+    def handle_bid(self, cow_type: int, player_who_gets_cow: int, player_who_gets_money: int, money_amount: list[int]):
+        self._players[player_who_gets_cow].add_cow(cow_type, 1)
+        self._players[player_who_gets_money].add_money(money_amount)
+        self._players[player_who_gets_cow].remove_money(money_amount)
+
+    def handle_trade(
+        self,
+        cow_type: int,
+        cow_amount: int,
+        challenged_player: int,
+        money_amount_challenger: list[int],
+        money_amount_contender: list[int],
+        winner_idx: int,
+        looser_idx: int,
+    ):
+        self._players[winner_idx].add_cow(cow_type, cow_amount)
+        self._players[looser_idx].remove_cow(cow_type, cow_amount)
+
+        self._players[challenged_player].add_money(money_amount_challenger)
+        self._players[challenged_player].remove_money(money_amount_contender)
+
+        self._players[self.get_current_player_idx()].add_money(money_amount_contender)
+        self._players[self.get_current_player_idx()].remove_money(money_amount_challenger)
+
+    #-- Stats --
     def get_player_stats(self) -> list[dict[int, list[int]]]:
         stats = []
         for i in range(self.num_players):

@@ -17,7 +17,7 @@ class PlayTradeTurn:
         
         joint_cows = self.game.get_possible_cow_trades()
 
-        if joint_cows is None:
+        if not joint_cows:
             return Result(ResultType.FAILURE, "There are no joint cows.")
 
         # decide which player to challenge, plus which and how many cows
