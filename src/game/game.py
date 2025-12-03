@@ -82,14 +82,18 @@ class Game:
 
     ### Game Logik ###
 
-    def is_game_over(self):
+    def is_game_over(self) -> list[int] | None:
+        """Returns the final scores if the game is over, otherwise None"""
         if self.card_stack.is_empty() and not self.have_players_cows():
             self.game_is_ongoing = False
 
             scores = []
             for i in range(self.num_players):
                 scores.append(self._players[i].get_score())
-            print(f"Game OVER -- Scores: {scores}")
+            
+            return scores
+        else:
+            return None
 
     def have_players_cows(self):
         has_cow = False
@@ -211,12 +215,16 @@ class CardStack:
     def draw_card(self) -> int:
         """Draws a cow card from the stack, removes it from the card stack and returns it"""
         current_cow_draw = self._card_stack[0]
-        print(f"Bid for COW {current_cow_draw}!")
-        if len(self._card_stack) == 1:
-            print("Last card was drawn.")
-            self._is_card_stack_empty = True
         self._card_stack.pop(0)
+
+        if not any(self._card_stack):
+            self._is_card_stack_empty = True
+
         return current_cow_draw
+
+    def get_num_cards(self) -> int:
+        """Returns the number of cards in the stack"""
+        return len(self._card_stack)
 
     def is_empty(self) -> bool:
         """Returns True if the card stack is empty"""
@@ -228,7 +236,6 @@ class CardStack:
     def is_donkey_cow(self, drawn_card) -> bool:  
         """Check if a donkey cow was drawn"""
         if drawn_card == GameConfig.DONKEY_COW:
-            print("It's a donkey!")
             return True
         else:
             return False
@@ -237,6 +244,9 @@ class CardStack:
 class Bank:
     def __init__(self):
         self._money_inflation_stage = 2     # starting with 50 money
+
+    def get_inflation_value(self):
+        return GameConfig.MONEY_CARD_VALUES[self._money_inflation_stage]
 
     def inflate_player_money(self, player_list: list[Player]):
         """Increases the money of all players by 1 in the current inflation stage"""

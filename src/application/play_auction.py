@@ -1,5 +1,6 @@
 from action_handlers.bidding import BidHandler
-from interface.general_interface import PlayerInterface
+from interface.player_interface import PlayerInterface
+from io_handler.outputs import OutputHandler
 from return_types.results import ResultType, Result
 from game_config.game_config import GameConfig
 
@@ -7,8 +8,9 @@ from game.game import Game
 
 class PlayBidTurn:
 
-    def __init__(self, player_interfaces: list[PlayerInterface], game: Game):
+    def __init__(self, player_interfaces: list[PlayerInterface], output_handler: OutputHandler, game: Game):
         self.player_interfaces = player_interfaces
+        self.output_handler = output_handler
         self.game = game
 
     def execute(self):
@@ -17,8 +19,11 @@ class PlayBidTurn:
             return Result(ResultType.FAILURE, f"Card stack is empty")
 
         cow_draw = self.game.card_stack.draw_card()
+        self.output_handler.show_cow_draw(cow_draw)
+
         if self.game.card_stack.is_donkey_cow(cow_draw):
             self.game.bank.inflate_player_money(self.game.get_list_of_players())
+            self.output_handler.show_donkey_event(self.game.bank.get_inflation_value())
 
         self.bid_handler = BidHandler(self.game.get_current_player_idx(), self.game.num_players) #TODO write getter
 
@@ -34,7 +39,7 @@ class PlayBidTurn:
 
                     if result.type == ResultType.FAILURE:
                         self.bid_handler.pass_bid(bid.player_idx)
-                        print(result.message)   # TODO change to io_handler
+                        self.output_handler.show_message(result.message)
 
             if self.bid_handler.is_complete():
                 break

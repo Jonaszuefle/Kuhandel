@@ -1,12 +1,13 @@
 from action_handlers.trading import TradeHandler
-from interface.general_interface import PlayerInterface
+from interface.player_interface import PlayerInterface
+from io_handler.outputs import OutputHandler
 from return_types.results import ResultType, Result
 
 from game.game import Game
 
 class PlayTradeTurn:
 
-    def __init__(self, player_interfaces: list[PlayerInterface], game: Game):
+    def __init__(self, player_interfaces: list[PlayerInterface], output_handler: OutputHandler, game: Game):
         self.player_interfaces = player_interfaces
         self.game = game
 
