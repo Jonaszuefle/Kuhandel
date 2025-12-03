@@ -16,7 +16,7 @@ class HumanPlayer(PlayerInterface):
         return self.io_handler.ask_for_bid(self.player_idx, bid_handler.get_highest_bid())
     
     def make_buy_back_decision(self, highest_bid):
-        return self.io_handler.ask_for_buy_back(highest_bid)
+        return self.io_handler.ask_for_buy_back(self.player_idx, highest_bid)
     
     def choose_money_cards(self, highest_bid, buyer_idx):
         return self.io_handler.ask_for_money_cards(highest_bid, buyer_idx)

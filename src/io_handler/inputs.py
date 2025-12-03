@@ -3,6 +3,9 @@ from return_types.action import ActionType, Bid, Trade
 
 
 class InputHandler(ABC):
+    def __init__(self, player_names: dict[int: str]):
+        self.player_names = player_names
+
     @abstractmethod
     def ask_for_action(self, current_player: int) -> ActionType:
         pass
@@ -24,7 +27,7 @@ class ConsoleInputHandler(InputHandler):
     def ask_for_action(self, player_idx: int) -> ActionType:
         while True:
             try:
-                print(f"\nPlayer {player_idx}! Its your turn!")
+                print(f"\n{self.player_names[player_idx]}! Its your turn!")
 
                 action = input(f"Choose an action: bid/trade/stats ").strip().lower()
 
@@ -56,7 +59,7 @@ class ConsoleInputHandler(InputHandler):
     def ask_for_bid(self, player_idx: int, highest_bid: int) -> Bid | None:
         while True:
             
-            raw_input = input(f"Player {player_idx} bid higher than {highest_bid} or pass (p): ").strip().lower()
+            raw_input = input(f"{self.player_names[player_idx]} bid higher than {highest_bid} or pass (p): ").strip().lower()
             
             if raw_input in ["p", "pass"]:
                 return Bid(player_idx, None)
@@ -75,10 +78,10 @@ class ConsoleInputHandler(InputHandler):
             except KeyboardInterrupt:
                 raise
 
-    def ask_for_buy_back(self, highest_bid: Bid) -> bool:
+    def ask_for_buy_back(self, player_idx: int, highest_bid: Bid) -> bool:
         while True:
             try:
-                raw_input = input(f"Auctionator, do you want to take the buy-back action from player {highest_bid.player_idx} of {highest_bid.value}? y/n: ").strip().lower()
+                raw_input = input(f"{self.player_names[player_idx]} do you want to take the buy-back action from {self.player_names[highest_bid.player_idx]} of {highest_bid.value}? y/n: ").strip().lower()
                 if raw_input in ["yes","y"]:
                     return True
                 elif raw_input in ["no", "n"]:
@@ -95,7 +98,7 @@ class ConsoleInputHandler(InputHandler):
     def ask_for_money_cards(self, highest_bid: Bid, buyer: int) -> list[int]:
         while True:
             try:
-                raw_input = input(f"Player {buyer} choose your money cards to pay {highest_bid.value}? Separate with \",\": ").strip().split(",")
+                raw_input = input(f"{self.player_names[buyer]} choose your money cards to pay {highest_bid.value}? Separate with \",\": ").strip().split(",")
                 
                 parsed = list(map(int, raw_input))
 
@@ -109,7 +112,7 @@ class ConsoleInputHandler(InputHandler):
 
     def ask_for_trade(self, joint_cows: dict[int: int]):
         for idx in joint_cows:
-            print(f"Player {idx} has {joint_cows[idx]}")
+            print(f"{self.player_names[idx]} has {joint_cows[idx]}")
 
         while True:
             try:
@@ -135,9 +138,9 @@ class ConsoleInputHandler(InputHandler):
 
     def ask_for_trade_offer(self, player_idx: int, card_count: int) -> Trade:
         if card_count is None:
-            msg = f"Player {player_idx}, how much do you want to bid? "
+            msg = f"{self.player_names[player_idx]}, how much do you want to bid? "
         else:
-            msg = f"Player {player_idx}, {card_count} cards were bidden, what do you want to bid? "
+            msg = f"{self.player_names[player_idx]}, {card_count} cards were bidden, what do you want to bid? "
 
         while True:
             try:

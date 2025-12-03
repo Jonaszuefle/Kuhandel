@@ -12,12 +12,12 @@ from game.game import Game
 
 
 if __name__ == "__main__":
-    input_handler = ConsoleInputHandler()
-    output_handler = ConsoleOutputHandler()
+    player_names = {0: "Alice", 1: "Bob", 2: "Charlie"}
 
-    input_interfaces = [HumanPlayer(0, input_handler),
-                  HumanPlayer(1, input_handler),
-                  HumanPlayer(2, input_handler)]
+    input_handler = ConsoleInputHandler(player_names)
+    output_handler = ConsoleOutputHandler(player_names)
+
+    input_interfaces = [HumanPlayer(i, input_handler) for i in player_names.keys()]
 
     game = Game(len(input_interfaces))
     game.start_game()
