@@ -15,8 +15,7 @@ class Game:
         self.num_players = num_players
 
     def start_game(self):
-        self._card_stack = self.get_random_starting_stack(GameConfig.COW_CARD_VALUES)
-        self._is_card_stack_empty = False
+        self.card_stack = CardStack(GameConfig.COW_CARD_VALUES)
 
         self._players = self.get_list_of_players()
         self._current_player = self.get_random_starting_player()
@@ -31,15 +30,6 @@ class Game:
 
     def get_random_starting_player(self) -> int:
         return random.randint(0, self.num_players - 1)
-
-    def get_random_starting_stack(self, cow_cards: list[int]) -> list[int]:
-        card_stack = []
-        for i in range(len(cow_cards)):
-            for j in range(4):
-                card_stack.append(cow_cards[i])
-        random_cow_cards = random.sample(card_stack, len(card_stack))
-
-        return random_cow_cards
     
     def get_player(self, idx: int):
         return self._players[idx]
@@ -90,28 +80,24 @@ class Game:
 
         return PlayerView(player.get_player_idx(), public_player_view, private_view)
 
-    ### Game Logik ###
+    #-- Card Stack --
     def draw_cow_from_stack(self):
-        self.current_cow_draw = self._card_stack[0]
-        print(f"Bid for COW {self.current_cow_draw}!")
-        if len(self._card_stack) == 1:
-            print("Last card was drawn.")
-            self._is_card_stack_empty = True
-
-        self._card_stack.pop(0)
+        card_draw = self.card_stack.draw_card()
+        if self.card_stack.is_donkey_cow(card_draw):
+            self.inflate_player_money()
+        self._current_cow_draw = card_draw
 
     def is_card_stack_empty(self) -> bool:
-        return self._is_card_stack_empty
+        return self.card_stack.is_stack_empty()
 
     def undo_cow_card_craw(self):
-        self._card_stack.insert(0, self.current_cow_draw)
+        self.card_stack.undo_card_draw()
 
-    def is_donkey_cow(self):  # increase inflation
-        if self.current_cow_draw == GameConfig.DONKEY_COW:
-            print("It's a donkey!")
-            return True
-        else:
-            return False
+    def is_donkey_cow(self) -> bool:
+        return self.card_stack.is_donkey_cow()
+
+    ### Game Logik ###
+    
         
     def inflate_player_money(self):
         money = [0, 0, 0, 0, 0, 0]
@@ -129,7 +115,7 @@ class Game:
             player.remove_money(money)
 
     def is_game_over(self):
-        if self._is_card_stack_empty and not self.have_players_cows():
+        if self.card_stack.is_stack_empty() and not self.have_players_cows():
             self.game_is_ongoing = False
 
             scores = []
@@ -174,13 +160,11 @@ class Game:
 
         next_pl_idx = self._active_players[next_in_active]
 
-        print(f"Debug: {next_pl_idx}, {self._active_players}")
-
         self.set_current_player(next_pl_idx)
 
     # Bid specific
     def handle_bid(self, player_who_gets_cow: int, player_who_gets_money: int, money_amount: list[int]):
-        self._players[player_who_gets_cow].add_cow(self.current_cow_draw, 1)
+        self._players[player_who_gets_cow].add_cow(self._current_cow_draw, 1)
         self._players[player_who_gets_money].add_money(money_amount)
         self._players[player_who_gets_cow].remove_money(money_amount)
 
@@ -228,7 +212,6 @@ class Game:
         else:
             return None
 
-
     # Value 
     def get_player_stats(self) -> list[dict[int, list[int]]]:
         stats = []
@@ -242,3 +225,42 @@ class Game:
                 }
             )
         return stats
+
+
+class CardStack:
+    def __init__(self, cow_cards: list[int]):
+        self._card_stack = self.get_random_stack(cow_cards)
+        self._is_card_stack_empty = False
+
+    def get_random_stack(self, cow_cards: list[int]) -> list[int]:
+        """Returns a random starting stack of cards for the given unique cow cards"""
+        card_stack = []
+        for i in range(len(cow_cards)):
+            for j in range(4):
+                card_stack.append(cow_cards[i])
+        return random.sample(card_stack, len(card_stack))
+
+    def draw_card(self) -> int:
+        """Draws a cow card from the stack, removes it from the card stack and returns it"""
+        current_cow_draw = self._card_stack[0]
+        print(f"Bid for COW {current_cow_draw}!")
+        if len(self._card_stack) == 1:
+            print("Last card was drawn.")
+            self._is_card_stack_empty = True
+        self._card_stack.pop(0)
+        return current_cow_draw
+
+    def is_stack_empty(self) -> bool:
+        """Returns True if the card stack is empty"""
+        return self._is_card_stack_empty
+
+    def undo_card_draw(self):
+        self._card_stack.insert(0, self.current_cow_draw)
+
+    def is_donkey_cow(self, drawn_card) -> bool:  
+        """Check if a donkey cow was drawn"""
+        if drawn_card == GameConfig.DONKEY_COW:
+            print("It's a donkey!")
+            return True
+        else:
+            return False

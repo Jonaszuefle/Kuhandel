@@ -17,8 +17,6 @@ class PlayBidTurn:
             return Result(ResultType.FAILURE, f"Card stack is empty")
 
         self.game.draw_cow_from_stack()
-        if self.game.is_donkey_cow():
-            self.game.inflate_player_money()
 
         self.bid_handler = BidHandler(self.game.get_current_player_idx(), self.game.num_players) #TODO write getter
 
