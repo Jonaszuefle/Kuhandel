@@ -7,7 +7,6 @@ from game_config.game_config import GameConfig
 
 
 class Game:
-    _money_inflation_stage = 2
     __player_limit = [2, 5]  # TODO optional
     game_is_ongoing = True
 
@@ -16,6 +15,7 @@ class Game:
 
     def start_game(self):
         self.card_stack = CardStack(GameConfig.COW_CARD_VALUES)
+        self.bank = Bank()
 
         self._players = self.get_list_of_players()
         self._current_player = self.get_random_starting_player()
@@ -80,42 +80,10 @@ class Game:
 
         return PlayerView(player.get_player_idx(), public_player_view, private_view)
 
-    #-- Card Stack --
-    def draw_cow_from_stack(self):
-        card_draw = self.card_stack.draw_card()
-        if self.card_stack.is_donkey_cow(card_draw):
-            self.inflate_player_money()
-        self._current_cow_draw = card_draw
-
-    def is_card_stack_empty(self) -> bool:
-        return self.card_stack.is_stack_empty()
-
-    def undo_cow_card_craw(self):
-        self.card_stack.undo_card_draw()
-
-    def is_donkey_cow(self) -> bool:
-        return self.card_stack.is_donkey_cow()
-
     ### Game Logik ###
-    
-        
-    def inflate_player_money(self):
-        money = [0, 0, 0, 0, 0, 0]
-        money[self._money_inflation_stage] = 1
-        for player in self._players:
-            player.add_money(money)
-        self._money_inflation_stage += 1
-
-    def undo_inflation(self):
-        money = [0, 0, 0, 0, 0, 0]
-        self._money_inflation_stage -= 1
-
-        money[self._money_inflation_stage] = 1
-        for player in self._players:
-            player.remove_money(money)
 
     def is_game_over(self):
-        if self.card_stack.is_stack_empty() and not self.have_players_cows():
+        if self.card_stack.is_empty() and not self.have_players_cows():
             self.game_is_ongoing = False
 
             scores = []
@@ -133,7 +101,7 @@ class Game:
     
     def is_any_player_finished(self):
         """Check if a player has no cows and the deck is empty"""
-        if self.is_card_stack_empty():
+        if self.card_stack.is_empty():
             for pl_idx in self._active_players:
                 if not any(self.get_player(pl_idx).get_cow_inventory()):
                     self.remove_active_player(pl_idx)
@@ -163,8 +131,8 @@ class Game:
         self.set_current_player(next_pl_idx)
 
     # Bid specific
-    def handle_bid(self, player_who_gets_cow: int, player_who_gets_money: int, money_amount: list[int]):
-        self._players[player_who_gets_cow].add_cow(self._current_cow_draw, 1)
+    def handle_bid(self, cow_type: int, player_who_gets_cow: int, player_who_gets_money: int, money_amount: list[int]):
+        self._players[player_who_gets_cow].add_cow(cow_type, 1)
         self._players[player_who_gets_money].add_money(money_amount)
         self._players[player_who_gets_cow].remove_money(money_amount)
 
@@ -250,7 +218,7 @@ class CardStack:
         self._card_stack.pop(0)
         return current_cow_draw
 
-    def is_stack_empty(self) -> bool:
+    def is_empty(self) -> bool:
         """Returns True if the card stack is empty"""
         return self._is_card_stack_empty
 
@@ -264,3 +232,25 @@ class CardStack:
             return True
         else:
             return False
+
+
+class Bank:
+    def __init__(self):
+        self._money_inflation_stage = 2     # starting with 50 money
+
+    def inflate_player_money(self, player_list: list[Player]):
+        """Increases the money of all players by 1 in the current inflation stage"""
+        money = [0, 0, 0, 0, 0, 0]
+        money[self._money_inflation_stage] = 1
+        for player in player_list:
+            player.add_money(money)
+        self._money_inflation_stage += 1
+
+    def undo_inflation(self, player_list: list[Player]):
+        """Decreases the money of all players by 1 in the latest inflation stage"""
+        money = [0, 0, 0, 0, 0, 0]
+        self._money_inflation_stage -= 1
+
+        money[self._money_inflation_stage] = 1
+        for player in player_list:
+            player.remove_money(money)

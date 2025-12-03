@@ -13,10 +13,12 @@ class PlayBidTurn:
 
     def execute(self):
 
-        if self.game.is_card_stack_empty():
+        if self.game.card_stack.is_empty():
             return Result(ResultType.FAILURE, f"Card stack is empty")
 
-        self.game.draw_cow_from_stack()
+        cow_draw = self.game.card_stack.draw_card()
+        if self.game.card_stack.is_donkey_cow(cow_draw):
+            self.game.bank.inflate_player_money(self.game.get_list_of_players())
 
         self.bid_handler = BidHandler(self.game.get_current_player_idx(), self.game.num_players) #TODO write getter
 
@@ -55,7 +57,7 @@ class PlayBidTurn:
         else:
             money_cards = self.player_interfaces[buyer].choose_money_cards(winner_bid, buyer)
 
-        self.game.handle_bid(buyer, seller, money_cards)
+        self.game.handle_bid(cow_draw, buyer, seller, money_cards)
 
         self.game.end_turn()
 
