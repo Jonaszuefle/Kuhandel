@@ -12,7 +12,7 @@ from game.game import Game
 
 
 if __name__ == "__main__":
-    player_names = {0: "Alice", 1: "Bob", 2: "Charlie"}
+    player_names = {0: "Alice", 1: "Bob", 2: "Charlie", 3: "David"}
 
     input_handler = ConsoleInputHandler(player_names)
     output_handler = ConsoleOutputHandler(player_names)

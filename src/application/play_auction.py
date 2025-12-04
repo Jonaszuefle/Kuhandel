@@ -22,14 +22,14 @@ class PlayBidTurn:
         self.output_handler.show_cow_draw(cow_draw)
 
         if self.game.card_stack.is_donkey_cow(cow_draw):
-            self.game.bank.inflate_player_money(self.game.get_list_of_players())
+            self.game.bank.inflate_player_money(self.game.get_all_players())
             self.output_handler.show_donkey_event(self.game.bank.get_inflation_value())
 
         self.bid_handler = BidHandler(self.game.get_current_player_idx(), self.game.num_players) #TODO write getter
 
         # Auction loop
         while True:
-            for pl_idx in self.bid_handler.remaining_players:
+            for pl_idx in list(self.bid_handler.remaining_players):
                 bid = self.player_interfaces[pl_idx].make_bid_decision(self.game.get_player_view(pl_idx), self.bid_handler)
 
                 if bid.value is None:   # player wants to pass

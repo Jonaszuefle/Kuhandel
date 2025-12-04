@@ -5,7 +5,7 @@ class GameConfig:
 
     # Geldkarten
     MONEY_CARD_VALUES = [0, 10, 50, 100, 200, 500]
-    STARTING_MONEY = [3, 3, 5, 0, 0, 0]  # Anzahl pro Wert
+    STARTING_MONEY = [3, 3, 2, 0, 0, 0]  # Anzahl pro Wert
 
     # Spielregeln
     COPIES_PER_COW = 4

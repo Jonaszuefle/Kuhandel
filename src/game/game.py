@@ -23,6 +23,9 @@ class Game:
         self._active_players = list(range(self.num_players))
 
     def get_list_of_players(self) -> list[Player]:
+        if hasattr(self, '_players'):
+            return self._players
+        
         players = []
         for i in range(self.num_players):
             players.append(Player(i))
@@ -33,6 +36,9 @@ class Game:
     
     def get_player(self, idx: int):
         return self._players[idx]
+
+    def get_all_players(self) -> list[Player]:
+        return self._players
     
     def get_current_player(self) -> Player:
         """Returns the current player"""
@@ -105,7 +111,7 @@ class Game:
     def is_any_player_finished(self):
         """Check if a player has no cows and the deck is empty"""
         if self.card_stack.is_empty():
-            for pl_idx in self._active_players:
+            for pl_idx in list(self._active_players):
                 if not any(self.get_player(pl_idx).get_cow_inventory()):
                     self.remove_active_player(pl_idx)
 
@@ -145,12 +151,25 @@ class Game:
         if len(self._active_players) <= 1:
             return
 
-        current_idx_in_active = self._active_players.index(self.get_current_player_idx()) 
-        next_in_active = (current_idx_in_active + 1) % len(self._active_players)
-
-        next_pl_idx = self._active_players[next_in_active]
-
-        self.set_current_player(next_pl_idx)
+        current_player = self.get_current_player_idx()
+        
+        if current_player in self._active_players:
+            current_idx_in_active = self._active_players.index(current_player) 
+            next_in_active = (current_idx_in_active + 1) % len(self._active_players)
+            next_pl_idx = self._active_players[next_in_active]
+            self.set_current_player(next_pl_idx)
+        else:
+            # Current player was removed. Find the next player in order.
+            next_pl_idx = None
+            for p in self._active_players:
+                if p > current_player:
+                    next_pl_idx = p
+                    break
+            
+            if next_pl_idx is None:
+                next_pl_idx = self._active_players[0]
+            
+            self.set_current_player(next_pl_idx)
 
     def handle_bid(self, cow_type: int, player_who_gets_cow: int, player_who_gets_money: int, money_amount: list[int]):
         self._players[player_who_gets_cow].add_cow(cow_type, 1)
@@ -184,6 +203,7 @@ class Game:
                 {
                     "player_idx": self._players[i].get_player_idx(),
                     "money": self._players[i].get_money_inventory(),
+                    "total_money_value": self._players[i].get_money_value(),
                     "cows": self._players[i]._cow_cards.get_cow_inventory(),
                     "score": self._players[i].get_score(),
                 }
@@ -238,6 +258,8 @@ class Bank:
         self._money_inflation_stage = 2     # starting with 50 money
 
     def get_inflation_value(self):
+        if self._money_inflation_stage >= len(GameConfig.MONEY_CARD_VALUES):
+            return GameConfig.MONEY_CARD_VALUES[-1]
         return GameConfig.MONEY_CARD_VALUES[self._money_inflation_stage]
 
     def inflate_player_money(self, player_list: list[Player]):
