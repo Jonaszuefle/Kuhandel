@@ -1,9 +1,9 @@
-from return_types.results import Result, ResultType
+from return_types.results import ResultType
 from return_types.action import ActionType
 from interface.human_interface import HumanPlayer
 
-from io_handler.inputs import ConsoleInputHandler
-from io_handler.outputs import ConsoleOutputHandler
+from io_handler.console_inputs import ConsoleInputHandler
+from io_handler.console_outputs import ConsoleOutputHandler
 
 from application.play_auction import PlayBidTurn
 from application.play_trade import PlayTradeTurn
@@ -15,11 +15,11 @@ if __name__ == "__main__":
     player_names = {0: "Alice", 1: "Bob", 2: "Charlie", 3: "David"}
 
     input_handler = ConsoleInputHandler(player_names)
-    output_handler = ConsoleOutputHandler(player_names)
+    output_handler = ConsoleOutputHandler()
 
     input_interfaces = [HumanPlayer(i, input_handler) for i in player_names.keys()]
 
-    game = Game(len(input_interfaces))
+    game = Game(len(player_names), list(player_names.values()))
     game.start_game()
 
     while game.game_is_ongoing:
@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
         match action:
             case ActionType.BID:
-                auction_handler = PlayBidTurn(input_interfaces, output_handler, game)      # TODO where to add input check?
+                auction_handler = PlayBidTurn(input_interfaces, output_handler, game)     
                 res = auction_handler.execute()
             case ActionType.TRADE:
                 trade_handler = PlayTradeTurn(input_interfaces, output_handler, game)

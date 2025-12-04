@@ -4,6 +4,7 @@ from dataclasses import dataclass
 class PublicView:
     """Defines the attributes which each player is allowed to see publicly"""
     player_idx: int
+    player_name: str
     cow_cards: list[int] | None
     money_cards_count: int
     score: int
@@ -17,5 +18,5 @@ class PrivateView:
 class PlayerView:
     """Defines the visible and not visible player attributes"""
     current_player_idx: int
-    public_view: list[PublicView]
-    private_view: PrivateView
+    public: list[PublicView]
+    private: PrivateView

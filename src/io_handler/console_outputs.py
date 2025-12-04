@@ -1,12 +1,10 @@
 from abc import ABC, abstractmethod
+from game.player_view import PlayerView
 
 class OutputHandler(ABC):
     """
     Abstract base class for handling game outputs.
     """
-
-    def __init__(self, player_names: dict[int: str]):
-        self.player_names = player_names
 
     @abstractmethod
     def show_message(self, message: str):
@@ -37,7 +35,7 @@ class OutputHandler(ABC):
         pass
 
     @abstractmethod
-    def show_stats(self, stats: list[dict[int, list[int]]], card_stack_count: int):
+    def show_stats(self, player_view: PlayerView, card_stack_count: int):
         """
         Displays the player stats.
         """
@@ -80,19 +78,21 @@ class ConsoleOutputHandler(OutputHandler):
         """
         print("Last card was drawn.")
 
-    def show_stats(self, stats: list[dict[int, list[int]]], card_stack_count: int):
+    def show_stats(self, player_view: PlayerView, card_stack_count: int):
         """
         Prints the player stats to the console.
         """
-        max_len = max(len(name) for name in self.player_names.values())
+        max_len = max(len(pub_view.player_name) for pub_view in player_view.public)
 
         print(f"\nCards left: {card_stack_count}")
-        for i in range(len(stats)):
-            print(f"{self.player_names[stats[i]['player_idx']].ljust(max_len)} has -- {stats[i]['money']} money -- {stats[i]['cows']} cows -- {stats[i]['score']} score.")
+        for pub_view in player_view.public:
+            print(f"{pub_view.player_name.ljust(max_len)} has -- {pub_view.money_cards_count} money cards -- {pub_view.cow_cards} cows -- {pub_view.score} score.")
+        
+        print(f"Your money cards: {player_view.private.money_card_values}\n")
 
-    def show_final_score(self, scores: list[int]):
+    def show_final_score(self, player_view: PlayerView):
         """
         Prints the final score.
         """
-        for score in scores:
-            print(f"{self.player_names[scores.index(score)]} has {score} points.")  
+        for view in player_view.public:
+            print(f"{view.player_name} has {view.score} points.")  

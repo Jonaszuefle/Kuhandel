@@ -21,7 +21,7 @@ class BidHandler:
         return Result(ResultType.SUCCESS)
 
     def get_highest_bid(self) -> int:
-        """Return the higehst bid"""
+        """Return the highest bid"""
         if not self.bids:
             return 0
         else:

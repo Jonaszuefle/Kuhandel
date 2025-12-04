@@ -10,28 +10,23 @@ class Game:
     __player_limit = [2, 5]  # TODO optional
     game_is_ongoing = True
 
-    def __init__(self, num_players):
+    def __init__(self, num_players, player_names: list[str]):
         self.num_players = num_players
+        self.player_names = player_names
 
     def start_game(self):
         self.card_stack = CardStack(GameConfig.COW_CARD_VALUES)
         self.bank = Bank()
 
-        self._players = self.get_list_of_players()
-        self._current_player = self.get_random_starting_player()
+        self._players = self._create_players()
+        self._current_player = self._get_random_starting_player()
         self._current_turn = 0
         self._active_players = list(range(self.num_players))
 
-    def get_list_of_players(self) -> list[Player]:
-        if hasattr(self, '_players'):
-            return self._players
-        
-        players = []
-        for i in range(self.num_players):
-            players.append(Player(i))
-        return players
+    def _create_players(self) -> list[Player]:
+        return [Player(i, self.player_names[i]) for i in range(self.num_players)] 
 
-    def get_random_starting_player(self) -> int:
+    def _get_random_starting_player(self) -> int:
         return random.randint(0, self.num_players - 1)
     
     def get_player(self, idx: int):
@@ -76,11 +71,11 @@ class Game:
     def get_player_view(self, player_idx: int) -> PlayerView:
         """Return the player view for the given player index"""
         player = self.get_player(player_idx)
-        other_players = [p for p in self.get_list_of_players() if p.get_player_idx() != player_idx]
+        all_players = self.get_all_players()
 
         public_player_view = []
-        for player in other_players:
-            public_player_view.append(PublicView(player.get_player_idx(), player.get_cow_inventory(), player.get_money_cards_count(), player.get_score()))
+        for player in all_players:
+            public_player_view.append(PublicView(player.get_player_idx(), player.get_player_name(), player.get_cow_inventory(), player.get_money_cards_count(), player.get_score()))
         
         private_view = PrivateView(player.get_money_inventory())
 
@@ -142,15 +137,19 @@ class Game:
     #-- Turn handling --
     def end_turn(self):
         """Check if players have 4 cows, update the score and change to the next player"""
-        for i in range(self.num_players):
-            self._players[i].update_score()
+        for player in self.get_all_players():
+            player.update_score()
 
         self.is_any_player_finished()
         self.set_current_turn()
 
         if len(self._active_players) <= 1:
             return
+        
+        self.set_next_player()
 
+    def set_next_player(self):
+        """Sets the next "current player" in the active player list"""
         current_player = self.get_current_player_idx()
         
         if current_player in self._active_players:
@@ -184,32 +183,16 @@ class Game:
         money_amount_challenger: list[int],
         money_amount_contender: list[int],
         winner_idx: int,
-        looser_idx: int,
+        loser_idx: int,
     ):
         self._players[winner_idx].add_cow(cow_type, cow_amount)
-        self._players[looser_idx].remove_cow(cow_type, cow_amount)
+        self._players[loser_idx].remove_cow(cow_type, cow_amount)
 
         self._players[challenged_player].add_money(money_amount_challenger)
         self._players[challenged_player].remove_money(money_amount_contender)
 
         self._players[self.get_current_player_idx()].add_money(money_amount_contender)
         self._players[self.get_current_player_idx()].remove_money(money_amount_challenger)
-
-    #-- Stats --
-    def get_player_stats(self) -> list[dict[int, list[int]]]:
-        stats = []
-        for i in range(self.num_players):
-            stats.append(
-                {
-                    "player_idx": self._players[i].get_player_idx(),
-                    "money": self._players[i].get_money_inventory(),
-                    "total_money_value": self._players[i].get_money_value(),
-                    "cows": self._players[i]._cow_cards.get_cow_inventory(),
-                    "score": self._players[i].get_score(),
-                }
-            )
-        return stats
-
 
 class CardStack:
     def __init__(self, cow_cards: list[int]):

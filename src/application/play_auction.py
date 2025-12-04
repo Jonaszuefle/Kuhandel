@@ -1,6 +1,6 @@
 from action_handlers.bidding import BidHandler
 from interface.player_interface import PlayerInterface
-from io_handler.outputs import OutputHandler
+from io_handler.console_outputs import OutputHandler
 from return_types.results import ResultType, Result
 from game_config.game_config import GameConfig
 

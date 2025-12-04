@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from return_types.results import Result, ResultType
 from return_types.action import Trade
+from game_config.game_config import GameConfig
 
 class TradeHandler:
     """Manages the trade round"""
@@ -33,5 +34,5 @@ class TradeHandler:
             return None
 
     def _calculate_value(self, trade: Trade) -> int:
-        values = [0, 10, 50, 100, 200, 500, 1000]
+        values = GameConfig.MONEY_CARD_VALUES
         return sum(value * values[i] for i, value in enumerate(trade.amount))
