@@ -116,7 +116,7 @@ class MoneyCards:
 
 class CowCards:
     def __init__(self):
-        self._cow_inventory = [20]  # list of current cows (unsorted)
+        self._cow_inventory = []  # list of current cows (unsorted)
         self.cow_finished = []
 
     def get_cow_inventory(self) -> list[int]:

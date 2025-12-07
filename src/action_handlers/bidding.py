@@ -4,7 +4,7 @@ from return_types.action import Bid
 
 class BidHandler:
     """Manages the auction round"""
-    def __init__(self, bid_master: int, num_players: int):
+    def __init__(self, bid_master: int, num_players: int) -> None:
         self.bid_master = bid_master
         self.num_players = num_players
         self.bids: list[Bid] = []
