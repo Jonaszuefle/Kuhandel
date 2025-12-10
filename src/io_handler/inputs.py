@@ -22,6 +22,7 @@ class InputHandler(ABC):
     def get_number_of_players(self) -> int:
         pass
 
+
 class ConsoleInputHandler(InputHandler):
     def ask_for_action(self, player_idx: int) -> ActionType:
         while True:
