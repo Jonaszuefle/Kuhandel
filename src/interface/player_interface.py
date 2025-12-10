@@ -4,8 +4,8 @@ from action_handlers.bidding import BidHandler
 from return_types.action import ActionType, Bid, Trade
 from game.player_view import PlayerView
 
-class PlayerInterface(ABC):
 
+class PlayerInterface(ABC):
     # General
     @abstractmethod
     def choose_action(self, view: PlayerView) -> ActionType:
@@ -14,7 +14,9 @@ class PlayerInterface(ABC):
 
     # Bidding
     @abstractmethod
-    def make_bid_decision(self, view: PlayerView, bid_handler: BidHandler) -> Bid | None:
+    def make_bid_decision(
+        self, view: PlayerView, bid_handler: BidHandler
+    ) -> Bid | None:
         """Decision making during the bidding process. Return Bid(idx, amount), if player wants to place bid, else Bid(idx, None)"""
         pass
 
@@ -28,7 +30,7 @@ class PlayerInterface(ABC):
         """Player must choose the money cards to pay the bid value"""
         pass
 
-    #Trading
+    # Trading
     @abstractmethod
     def make_trade_decision(self, joint_cows: list[int], view: PlayerView) -> int:
         """Decide which player to challenge, and how many and which cow(s). Return int,int,int"""
@@ -38,4 +40,3 @@ class PlayerInterface(ABC):
     def make_trade_offer(self, view: PlayerView, card_count: int = None) -> Trade:
         """Decide how much to bid for the trade"""
         pass
-
