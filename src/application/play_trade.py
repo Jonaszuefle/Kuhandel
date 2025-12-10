@@ -52,7 +52,7 @@ class PlayTradeTurn:
             trade_challenger.amount
         ):
             return Result(
-                ResultType.FAILURE, f"Current player does not have enough money"
+                ResultType.FAILURE, "Current player does not have enough money"
             )
 
         self.trade_handler.set_challenger_bid(trade_challenger)
@@ -62,7 +62,7 @@ class PlayTradeTurn:
         )
         if not self.game.get_current_player().has_enough_money(trade_contender.amount):
             return Result(
-                ResultType.FAILURE, f"Challenged player does not have enough money"
+                ResultType.FAILURE, "Challenged player does not have enough money"
             )
 
         self.trade_handler.set_contender_bid(trade_contender)

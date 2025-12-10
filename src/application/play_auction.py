@@ -20,7 +20,7 @@ class PlayBidTurn:
 
     def execute(self):
         if self.game.card_stack.is_empty():
-            return Result(ResultType.FAILURE, f"Card stack is empty")
+            return Result(ResultType.FAILURE, "Card stack is empty")
 
         cow_draw = self.game.card_stack.draw_card()
         self.output_handler.show_cow_draw(cow_draw)

@@ -1,4 +1,4 @@
-from return_types.results import Result, ResultType
+from return_types.results import ResultType
 from return_types.action import ActionType
 from interface.human_interface import HumanPlayer
 

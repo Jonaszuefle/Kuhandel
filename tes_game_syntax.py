@@ -1,4 +1,3 @@
-from player.payment_solver import MoneyPay
 
 
 if __name__ == "__main__":

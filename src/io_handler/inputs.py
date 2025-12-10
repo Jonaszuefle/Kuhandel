@@ -22,14 +22,13 @@ class InputHandler(ABC):
     def get_number_of_players(self) -> int:
         pass
 
-
 class ConsoleInputHandler(InputHandler):
     def ask_for_action(self, player_idx: int) -> ActionType:
         while True:
             try:
                 print(f"\n{self.player_names[player_idx]}! Its your turn!")
 
-                action = input(f"Choose an action: bid/trade/stats ").strip().lower()
+                action = input("Choose an action: bid/trade/stats ").strip().lower()
 
                 match action:
                     case "bid" | "b":
@@ -53,7 +52,8 @@ class ConsoleInputHandler(InputHandler):
             except KeyboardInterrupt:
                 print("Keyboard interrupt!")
                 break
-            except:
+            except:  # noqa: E722
+                # Todo(jzuefle) - fix error flow in regards to handling edge case
                 print("Wrong input, try again!")
 
     def ask_for_bid(self, player_idx: int, highest_bid: int) -> Bid | None:
@@ -77,8 +77,8 @@ class ConsoleInputHandler(InputHandler):
 
                 return Bid(player_idx, parsed_input)
 
-            except ValueError as e:
-                print(f"Wrong format.")
+            except ValueError:
+                print("Wrong format.")
                 continue
             except KeyboardInterrupt:
                 raise
@@ -100,7 +100,7 @@ class ConsoleInputHandler(InputHandler):
                 else:
                     continue
 
-            except Exception as e:
+            except Exception:
                 print("Error {e}")
                 continue
             except KeyboardInterrupt:
@@ -121,7 +121,7 @@ class ConsoleInputHandler(InputHandler):
 
                 return parsed
 
-            except Exception as e:
+            except Exception:
                 print("Error {e}")
                 continue
             except KeyboardInterrupt:
@@ -133,7 +133,7 @@ class ConsoleInputHandler(InputHandler):
 
         while True:
             try:
-                raw_contender = input(f"Choose contender: ")
+                raw_contender = input("Choose contender: ")
 
                 parsed_contender = int(raw_contender)
 
@@ -147,7 +147,7 @@ class ConsoleInputHandler(InputHandler):
 
                 return parsed_contender, parsed_cow, parsed_amount
 
-            except Exception as e:
+            except Exception:
                 print("Error {e}")
                 continue
             except KeyboardInterrupt:
