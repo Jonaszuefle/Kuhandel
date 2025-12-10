@@ -36,11 +36,11 @@ class Player:
 
     def get_money_inventory(self) -> list[int]:
         return self._money_cards._money_inventory
-    
+
     def get_optimal_payment(self, target_value) -> list[int]:
         """From a given target value, get the optimal amount of money cards"""
         return self.pay_solver.optimal_pay(target_value, self.get_money_inventory())
-    
+
     def get_money_cards_count(self):
         """Returns the number of total cards in the players hand"""
         return sum(self._money_cards._money_inventory)
@@ -63,9 +63,7 @@ class Player:
     def update_score(self):
         self._cow_cards.check_for_four_cows()
         self._score = (
-            sum(self._cow_cards.cow_finished)
-            * 4
-            * len(self._cow_cards.cow_finished)
+            sum(self._cow_cards.cow_finished) * 4 * len(self._cow_cards.cow_finished)
         )
 
     def get_score(self):
@@ -107,10 +105,7 @@ class MoneyCards:
     def return_money_value(self):
         """Returns the total Fvalue of the players money cards"""
         return sum(
-            [
-                a * b
-                for a, b in zip(self._money_inventory, GameConfig.MONEY_CARD_VALUES)
-            ]
+            [a * b for a, b in zip(self._money_inventory, GameConfig.MONEY_CARD_VALUES)]
         )
 
 

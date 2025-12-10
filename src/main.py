@@ -23,12 +23,13 @@ if __name__ == "__main__":
     game.start_game()
 
     while game.game_is_ongoing:
-    
         action = input_interfaces[game.get_current_player_idx()].choose_action(game)
 
         match action:
             case ActionType.BID:
-                auction_handler = PlayBidTurn(input_interfaces, output_handler, game)      # TODO where to add input check?
+                auction_handler = PlayBidTurn(
+                    input_interfaces, output_handler, game
+                )  # TODO where to add input check?
                 res = auction_handler.execute()
             case ActionType.TRADE:
                 trade_handler = PlayTradeTurn(input_interfaces, output_handler, game)
@@ -36,11 +37,10 @@ if __name__ == "__main__":
             case ActionType.STATS:
                 stats_handler = StatsHandler(output_handler, game)
                 res = stats_handler.execute()
-        
+
         if res.type == ResultType.FAILURE:
             output_handler.show_message(res.message)
 
         scores = game.is_game_over()
 
     output_handler.show_final_score(scores)
-            

@@ -3,7 +3,7 @@ from return_types.action import ActionType, Bid, Trade
 
 
 class InputHandler(ABC):
-    def __init__(self, player_names: dict[int: str]):
+    def __init__(self, player_names: dict[int:str]):
         self.player_names = player_names
 
     @abstractmethod
@@ -38,7 +38,7 @@ class ConsoleInputHandler(InputHandler):
                         return ActionType.TRADE
                     case "stats" | "s":
                         return ActionType.STATS
-                    
+
             except KeyboardInterrupt:
                 raise
 
@@ -58,9 +58,14 @@ class ConsoleInputHandler(InputHandler):
 
     def ask_for_bid(self, player_idx: int, highest_bid: int) -> Bid | None:
         while True:
-            
-            raw_input = input(f"{self.player_names[player_idx]} bid higher than {highest_bid} or pass (p): ").strip().lower()
-            
+            raw_input = (
+                input(
+                    f"{self.player_names[player_idx]} bid higher than {highest_bid} or pass (p): "
+                )
+                .strip()
+                .lower()
+            )
+
             if raw_input in ["p", "pass"]:
                 return Bid(player_idx, None)
             try:
@@ -71,7 +76,7 @@ class ConsoleInputHandler(InputHandler):
                 #         continue
 
                 return Bid(player_idx, parsed_input)
-                
+
             except ValueError as e:
                 print(f"Wrong format.")
                 continue
@@ -81,8 +86,14 @@ class ConsoleInputHandler(InputHandler):
     def ask_for_buy_back(self, player_idx: int, highest_bid: Bid) -> bool:
         while True:
             try:
-                raw_input = input(f"{self.player_names[player_idx]} do you want to take the buy-back action from {self.player_names[highest_bid.player_idx]} of {highest_bid.value}? y/n: ").strip().lower()
-                if raw_input in ["yes","y"]:
+                raw_input = (
+                    input(
+                        f"{self.player_names[player_idx]} do you want to take the buy-back action from {self.player_names[highest_bid.player_idx]} of {highest_bid.value}? y/n: "
+                    )
+                    .strip()
+                    .lower()
+                )
+                if raw_input in ["yes", "y"]:
                     return True
                 elif raw_input in ["no", "n"]:
                     return False
@@ -98,8 +109,14 @@ class ConsoleInputHandler(InputHandler):
     def ask_for_money_cards(self, highest_bid: Bid, buyer: int) -> list[int]:
         while True:
             try:
-                raw_input = input(f"{self.player_names[buyer]} choose your money cards to pay {highest_bid.value}? Separate with \",\": ").strip().split(",")
-                
+                raw_input = (
+                    input(
+                        f'{self.player_names[buyer]} choose your money cards to pay {highest_bid.value}? Separate with ",": '
+                    )
+                    .strip()
+                    .split(",")
+                )
+
                 parsed = list(map(int, raw_input))
 
                 return parsed
@@ -110,14 +127,14 @@ class ConsoleInputHandler(InputHandler):
             except KeyboardInterrupt:
                 break
 
-    def ask_for_trade(self, joint_cows: dict[int: int]):
+    def ask_for_trade(self, joint_cows: dict[int:int]):
         for idx in joint_cows:
             print(f"{self.player_names[idx]} has {joint_cows[idx]}")
 
         while True:
             try:
                 raw_contender = input(f"Choose contender: ")
-                
+
                 parsed_contender = int(raw_contender)
 
                 raw_cow = input("Choose cow type: ")
@@ -127,7 +144,7 @@ class ConsoleInputHandler(InputHandler):
                 raw_amount = input("Choose amount of cows: ")
 
                 parsed_amount = int(raw_amount)
-                
+
                 return parsed_contender, parsed_cow, parsed_amount
 
             except Exception as e:
@@ -144,19 +161,18 @@ class ConsoleInputHandler(InputHandler):
 
         while True:
             try:
-                raw_input = input(msg).strip().split(',')
-                
+                raw_input = input(msg).strip().split(",")
+
                 parsed_input = list(map(int, raw_input))
-                
+
                 return Trade(player_idx, parsed_input)
 
             # except Exception as e:
             #     print("Error {e}")
             #     continue
             except KeyboardInterrupt:
-                break    
-    
+                break
+
     # Outputs
     def print_donkey(self):
         print("It's a donkey! Inflation time.")
-

@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
 
+
 class OutputHandler(ABC):
     """
     Abstract base class for handling game outputs.
     """
 
-    def __init__(self, player_names: dict[int: str]):
+    def __init__(self, player_names: dict[int:str]):
         self.player_names = player_names
 
     @abstractmethod
@@ -88,11 +89,13 @@ class ConsoleOutputHandler(OutputHandler):
 
         print(f"\nCards left: {card_stack_count}")
         for i in range(len(stats)):
-            print(f"{self.player_names[stats[i]['player_idx']].ljust(max_len)} has -- {stats[i]['money']} money -- {stats[i]['cows']} cows -- {stats[i]['score']} score.")
+            print(
+                f"{self.player_names[stats[i]['player_idx']].ljust(max_len)} has -- {stats[i]['money']} money -- {stats[i]['cows']} cows -- {stats[i]['score']} score."
+            )
 
     def show_final_score(self, scores: list[int]):
         """
         Prints the final score.
         """
         for score in scores:
-            print(f"{self.player_names[scores.index(score)]} has {score} points.")  
+            print(f"{self.player_names[scores.index(score)]} has {score} points.")
