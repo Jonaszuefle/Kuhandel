@@ -2,7 +2,8 @@ from return_types.results import Result, ResultType
 from io_handler.console_outputs import OutputHandler
 from game.game import Game
 
-class StatsHandler():
+
+class StatsHandler:
     def __init__(self, output_handler: OutputHandler, game: Game):
         self.game = game
         self.output_handler = output_handler

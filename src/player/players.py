@@ -5,7 +5,7 @@ from player.payment_solver import MoneyPay
 class Player:
     def __init__(self, player_idx: int, player_name: str):
         self._player_idx = player_idx
-        self._player_name = player_name  
+        self._player_name = player_name
 
         self._money_cards = MoneyCards()
         self._cow_cards = CowCards()
@@ -36,11 +36,11 @@ class Player:
 
     def get_money_inventory(self) -> list[int]:
         return self._money_cards._money_inventory
-    
+
     def get_optimal_payment(self, target_value) -> list[int]:
         """From a given target value, get the optimal amount of money cards"""
         return self.pay_solver.optimal_pay(target_value, self.get_money_inventory())
-    
+
     def get_money_cards_count(self) -> int:
         """Returns the number of total cards in the players hand"""
         return sum(self._money_cards._money_inventory)
@@ -63,9 +63,7 @@ class Player:
     def update_score(self) -> None:
         self._cow_cards.check_for_four_cows()
         self._score = (
-            sum(self._cow_cards.cow_finished)
-            * 4
-            * len(self._cow_cards.cow_finished)
+            sum(self._cow_cards.cow_finished) * 4 * len(self._cow_cards.cow_finished)
         )
 
     def get_score(self) -> int:
@@ -107,16 +105,13 @@ class MoneyCards:
     def return_money_value(self):
         """Returns the total Fvalue of the players money cards"""
         return sum(
-            [
-                a * b
-                for a, b in zip(self._money_inventory, GameConfig.MONEY_CARD_VALUES)
-            ]
+            [a * b for a, b in zip(self._money_inventory, GameConfig.MONEY_CARD_VALUES)]
         )
 
 
 class CowCards:
     def __init__(self):
-        self._cow_inventory = []  # list of current cows (unsorted)
+        self._cow_inventory = [20]  # list of current cows (unsorted)
         self.cow_finished = []
 
     def get_cow_inventory(self) -> list[int]:

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from game.player_view import PlayerView
 
+
 class OutputHandler(ABC):
     """
     Abstract base class for handling game outputs.
@@ -86,8 +87,10 @@ class ConsoleOutputHandler(OutputHandler):
 
         print(f"\nCards left: {card_stack_count}")
         for pub_view in player_view.public:
-            print(f"{pub_view.player_name.ljust(max_len)} has -- {pub_view.money_cards_count} money cards -- {pub_view.cow_cards} cows -- {pub_view.score} score.")
-        
+            print(
+                f"{pub_view.player_name.ljust(max_len)} has -- {pub_view.money_cards_count} money cards -- {pub_view.cow_cards} cows -- {pub_view.score} score."
+            )
+
         print(f"Your money cards: {player_view.private.money_card_values}\n")
 
     def show_final_score(self, player_view: PlayerView):
@@ -95,4 +98,4 @@ class ConsoleOutputHandler(OutputHandler):
         Prints the final score.
         """
         for view in player_view.public:
-            print(f"{view.player_name} has {view.score} points.")  
+            print(f"{view.player_name} has {view.score} points.")

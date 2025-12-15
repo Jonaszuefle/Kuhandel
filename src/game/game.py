@@ -3,7 +3,7 @@ from player.players import Player
 from game.player_view import PlayerView, PublicView, PrivateView
 from game_config.game_config import GameConfig
 
-#TODO public game info. kuh karten, wie viele geld karten, game view? 
+# TODO public game info. kuh karten, wie viele geld karten, game view?
 
 
 class Game:
@@ -24,21 +24,21 @@ class Game:
         self._active_players = list(range(self.num_players))
 
     def _create_players(self) -> list[Player]:
-        return [Player(i, self.player_names[i]) for i in range(self.num_players)] 
+        return [Player(i, self.player_names[i]) for i in range(self.num_players)]
 
     def _get_random_starting_player(self) -> int:
         return random.randint(0, self.num_players - 1)
-    
+
     def get_player(self, idx: int):
         return self._players[idx]
 
     def get_all_players(self) -> list[Player]:
         return self._players
-    
+
     def get_current_player(self) -> Player:
         """Returns the current player"""
         return self._players[self._current_player]
-    
+
     def get_other_players(self) -> list[Player]:
         """Return all players expect the current player"""
         current = self.get_current_player_idx()
@@ -56,18 +56,14 @@ class Game:
         """Get the current count of turns"""
         return self._current_turn
 
-    def set_current_turn(self):
-        """Increment turn index by one"""
-        self._current_turn = self._current_turn + 1
-
     def get_money_value(self, money_amount: list[int]) -> int:
         """Retrun the sum of money cards"""
         return sum([a * b for a, b in zip(money_amount, GameConfig.MONEY_CARD_VALUES)])
-    
+
     def remove_active_player(self, idx):
         """Remove an player if he is not active anymore"""
         self._active_players.remove(idx)
-    
+
     def get_player_view(self, player_idx: int) -> PlayerView:
         """Return the player view for the given player index"""
         player = self.get_player(player_idx)
@@ -75,13 +71,25 @@ class Game:
 
         public_player_view = []
         for player in all_players:
-            public_player_view.append(PublicView(player.get_player_idx(), player.get_player_name(), player.get_cow_inventory(), player.get_money_cards_count(), player.get_score()))
-        
-        private_view = PrivateView(player.get_money_inventory())
+            public_player_view.append(
+                PublicView(
+                    player.get_player_idx(),
+                    player.get_player_name(),
+                    player.get_cow_inventory(),
+                    player.get_money_cards_count(),
+                    player.get_score(),
+                )
+            )
+
+        private_view = PrivateView(
+            player.get_money_inventory(), 
+            player.get_money_value(),
+            self.get_possible_cow_trades()
+        )
 
         return PlayerView(player.get_player_idx(), public_player_view, private_view)
 
-    #-- Game Logik --
+    # -- Game Logik --
     def is_game_over(self) -> list[int] | None:
         """Returns the final scores if the game is over, otherwise None"""
         if self.card_stack.is_empty() and not self.have_players_cows():
@@ -90,7 +98,7 @@ class Game:
             scores = []
             for i in range(self.num_players):
                 scores.append(self._players[i].get_score())
-            
+
             return scores
         else:
             return None
@@ -102,21 +110,20 @@ class Game:
                 has_cow = True
                 break
         return has_cow
-    
-    def is_any_player_finished(self):
+
+    def remove_finished_player(self):
         """Check if a player has no cows and the deck is empty"""
         if self.card_stack.is_empty():
             for pl_idx in list(self._active_players):
                 if not any(self.get_player(pl_idx).get_cow_inventory()):
                     self.remove_active_player(pl_idx)
 
-    def get_possible_cow_trades(self) -> dict[int, list[int]] :
+    def get_possible_cow_trades(self) -> dict[int, list[int]]:
         """Returns a dict with player indices and the joint cows with respect the current player."""
         curr_pl = self._players[self._current_player]
-        curr_cows = list(set(curr_pl._cow_cards.get_cow_inventory())) 
-        
-        ret = {}
+        curr_cows = list(set(curr_pl._cow_cards.get_cow_inventory()))
 
+        ret = {}
         for pl in self._players:
             if pl.get_player_idx() == curr_pl.get_player_idx():
                 continue
@@ -126,34 +133,34 @@ class Game:
             for cow in cows:
                 if cow in curr_cows:
                     joint_cows.append(cow)
-            if any(joint_cows): 
+            if any(joint_cows):
                 ret[pl.get_player_idx()] = joint_cows
 
         if ret:
             return ret
         else:
             return {}
-            
-    #-- Turn handling --
+
+    # -- Turn handling --
     def end_turn(self):
         """Check if players have 4 cows, update the score and change to the next player"""
         for player in self.get_all_players():
             player.update_score()
 
-        self.is_any_player_finished()
-        self.set_current_turn()
+        self.remove_finished_player()
 
         if len(self._active_players) <= 1:
             return
-        
+
+        self._current_turn += 1
         self.set_next_player()
 
     def set_next_player(self):
         """Sets the next "current player" in the active player list"""
         current_player = self.get_current_player_idx()
-        
+
         if current_player in self._active_players:
-            current_idx_in_active = self._active_players.index(current_player) 
+            current_idx_in_active = self._active_players.index(current_player)
             next_in_active = (current_idx_in_active + 1) % len(self._active_players)
             next_pl_idx = self._active_players[next_in_active]
             self.set_current_player(next_pl_idx)
@@ -164,13 +171,19 @@ class Game:
                 if p > current_player:
                     next_pl_idx = p
                     break
-            
+
             if next_pl_idx is None:
                 next_pl_idx = self._active_players[0]
-            
+
             self.set_current_player(next_pl_idx)
 
-    def handle_bid(self, cow_type: int, player_who_gets_cow: int, player_who_gets_money: int, money_amount: list[int]):
+    def handle_bid(
+        self,
+        cow_type: int,
+        player_who_gets_cow: int,
+        player_who_gets_money: int,
+        money_amount: list[int],
+    ):
         self._players[player_who_gets_cow].add_cow(cow_type, 1)
         self._players[player_who_gets_money].add_money(money_amount)
         self._players[player_who_gets_cow].remove_money(money_amount)
@@ -192,7 +205,10 @@ class Game:
         self._players[challenged_player].remove_money(money_amount_contender)
 
         self._players[self.get_current_player_idx()].add_money(money_amount_contender)
-        self._players[self.get_current_player_idx()].remove_money(money_amount_challenger)
+        self._players[self.get_current_player_idx()].remove_money(
+            money_amount_challenger
+        )
+
 
 class CardStack:
     def __init__(self, cow_cards: list[int]):
@@ -225,10 +241,7 @@ class CardStack:
         """Returns True if the card stack is empty"""
         return self._is_card_stack_empty
 
-    def undo_card_draw(self):
-        self._card_stack.insert(0, self.current_cow_draw)
-
-    def is_donkey_cow(self, drawn_card) -> bool:  
+    def is_donkey_cow(self, drawn_card) -> bool:
         """Check if a donkey cow was drawn"""
         if drawn_card == GameConfig.DONKEY_COW:
             return True
@@ -238,7 +251,7 @@ class CardStack:
 
 class Bank:
     def __init__(self):
-        self._money_inflation_stage = 2     # starting with 50 money
+        self._money_inflation_stage = 2  # starting with 50 money
 
     def get_inflation_value(self):
         if self._money_inflation_stage >= len(GameConfig.MONEY_CARD_VALUES):
@@ -247,7 +260,8 @@ class Bank:
 
     def inflate_player_money(self, player_list: list[Player]):
         """Increases the money of all players by 1 in the current inflation stage"""
-        money = [0, 0, 0, 0, 0, 0]
+        money = [0] * len(GameConfig.MONEY_CARD_VALUES)
+
         money[self._money_inflation_stage] = 1
         for player in player_list:
             player.add_money(money)

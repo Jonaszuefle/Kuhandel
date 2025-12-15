@@ -3,8 +3,10 @@ from return_types.results import Result, ResultType
 from return_types.action import Trade
 from game_config.game_config import GameConfig
 
+
 class TradeHandler:
     """Manages the trade round"""
+
     def __init__(self, cow_type, cow_amount, challenger, contender):
         self.cow_type = cow_type
         self.cow_amount = cow_amount
@@ -16,7 +18,7 @@ class TradeHandler:
     def set_challenger_bid(self, trade: Trade):
         """Challenger bids first"""
         self.challenger_bid = trade
-    
+
     def set_contender_bid(self, trade: Trade):
         """Contender bids second. Getting information about amount of cards of challenger"""
         self.contender_bid = trade
