@@ -297,7 +297,7 @@ class TestGameFlow:
 
         res = play_bid_turn.execute()
 
-        #assert play_bid_turn.bid_handler.is_complete() == True
+        # assert play_bid_turn.bid_handler.is_complete() == True
         assert play_bid_turn.bid_handler.get_winner_bid().player_idx == 2
         assert play_bid_turn.bid_handler.remaining_players == [2]
 
