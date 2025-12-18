@@ -82,9 +82,9 @@ class Game:
             )
 
         private_view = PrivateView(
-            player.get_money_inventory(), 
+            player.get_money_inventory(),
             player.get_money_value(),
-            self.get_possible_cow_trades()
+            self.get_possible_cow_trades(),
         )
 
         return PlayerView(player.get_player_idx(), public_player_view, private_view)

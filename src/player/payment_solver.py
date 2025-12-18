@@ -1,7 +1,7 @@
 from game_config.game_config import GameConfig
 
 
-class MoneyPay:     # TODO add cost function -> tradeoff amount of money cards vs overpay
+class MoneyPay:  # TODO add cost function -> tradeoff amount of money cards vs overpay
     def optimal_pay(
         self, target_value: int, money_cards_amount: list[int]
     ) -> list[int]:

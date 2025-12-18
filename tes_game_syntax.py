@@ -13,11 +13,11 @@ if __name__ == "__main__":
     for pub in a.public:
         print(pub.player_name)
 
-    x = [1,2,3]
-    z = [3,4,5]
+    x = [1, 2, 3]
+    z = [3, 4, 5]
 
-    print([x+z for x,z in zip(x,z)])
-    
+    print([x + z for x, z in zip(x, z)])
+
     player_names = ["Alice", "Bob", "Charlie", "David"]
     name_to_idx = {
         name.lower(): idx for idx, name in zip(range(len(player_names)), player_names)
