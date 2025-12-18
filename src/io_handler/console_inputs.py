@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from return_types.action import ActionType, Bid, Trade
 from return_types.results import Result, ResultType
-from game.player_view import PlayerView
 from typing import Callable, Any
 
 
@@ -32,7 +31,7 @@ class ConsoleInputHandler(InputHandler):
             try:
                 print(f"\n{self.player_names[player_idx]}! Its your turn!")
 
-                action = input(f"Choose an action: bid/trade/stats ").strip().lower()
+                action = input("Choose an action: bid/trade/stats ").strip().lower()
 
                 match action:
                     case "bid" | "b":
@@ -56,8 +55,8 @@ class ConsoleInputHandler(InputHandler):
             except KeyboardInterrupt:
                 print("Keyboard interrupt!")
                 break
-            except:
-                print("Wrong input, try again!")
+            except Exception as e:
+                print(f"Wrong input, try again! {e}")
 
     def ask_for_bid(self, player_idx: int, highest_bid: int) -> Bid:
         bid = self._ask_until_valid(
@@ -211,7 +210,7 @@ class ConsoleInputHandler(InputHandler):
 
     def _validate_money_list(self, money_list: list[int]) -> Result:
         if len(money_list) != 6:
-            return Result(ResultType.FAILURE, f"Money list must have 6 values.")
+            return Result(ResultType.FAILURE, "Money list must have 6 values.")
         for val in money_list:
             if val < 0:
                 return Result(ResultType.FAILURE, "Money values must be positive.")

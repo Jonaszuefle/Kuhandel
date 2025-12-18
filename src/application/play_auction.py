@@ -21,7 +21,7 @@ class PlayBidTurn:
 
     def execute(self):
         if self.game.card_stack.is_empty():
-            return Result(ResultType.FAILURE, f"Card stack is empty")
+            return Result(ResultType.FAILURE, "Card stack is empty")
 
         auctioneer_idx = self.game.get_current_player_idx()
 

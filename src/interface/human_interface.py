@@ -1,5 +1,4 @@
 from interface.player_interface import PlayerInterface
-from game.player_view import PlayerView
 
 
 class HumanPlayer(PlayerInterface):

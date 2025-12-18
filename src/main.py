@@ -1,7 +1,7 @@
 from return_types.results import ResultType
 from return_types.action import ActionType
 from interface.human_interface import HumanPlayer
-from interface.bot_interface import BotPlayer
+# from interface.bot_interface import BotPlayer
 
 from io_handler.console_inputs import ConsoleInputHandler
 from io_handler.console_outputs import ConsoleOutputHandler

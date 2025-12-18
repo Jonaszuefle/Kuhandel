@@ -43,7 +43,7 @@ class PlayTradeTurn:
             )
 
         if enemy_idx == current_player_idx:
-            return Result(ResultType.FAILURE, f"You must challenge another player.")
+            return Result(ResultType.FAILURE, "You must challenge another player.")
 
         self.trade_handler = TradeHandler(
             cow_type, cow_amount, current_player_idx, enemy_idx
@@ -55,7 +55,7 @@ class PlayTradeTurn:
         if not self.game.get_player(enemy_idx).has_enough_money(
             trade_challenger.amount
         ):
-            return Result(ResultType.FAILURE, f"You don't have enough money")
+            return Result(ResultType.FAILURE, "You don't have enough money")
 
         self.trade_handler.set_challenger_bid(trade_challenger)
 
@@ -63,8 +63,7 @@ class PlayTradeTurn:
             current_player_view, trade_challenger.card_count
         )
         if not self.game.get_current_player().has_enough_money(trade_contender.amount):
-            return Result(ResultType.FAILURE, f"You dont have enough money")
-
+            return Result(ResultType.FAILURE, "You don't have enough money")
         self.trade_handler.set_contender_bid(trade_contender)
 
         winner, looser = self.trade_handler.get_winner_and_loser()
